@@ -11,7 +11,6 @@
 
 const chai = require('chai');
 const chaiResValidator = require('chai-openapi-response-validator');
-require('../../../../src/pfe/portal/routes/templates.route');
 
 const {
     defaultTemplates,
@@ -106,7 +105,7 @@ describe('Template API tests', function() {
     });
 
     describe('GET /api/v1/templates/repositories', function() {
-        it.skip('should return 200 and a list of available template repositories', async function() {
+        it('should return 200 and a list of available template repositories', async function() {
             this.timeout(testTimeout.short);
             const res = await getTemplateRepos();
 
@@ -156,7 +155,7 @@ describe('Template API tests', function() {
         });
     });
 
-    describe.skip('DELETE|POST /api/v1/templates/repositories', function() {
+    describe('DELETE|POST /api/v1/templates/repositories', function() {
         const repoToDelete = sampleRepos.codewind;
         const repoToAdd = {
             url: 'https://raw.githubusercontent.com/codewind-resources/codewind-templates/aad4bafc14e1a295fb8e462c20fe8627248609a3/devfiles/index.json',
