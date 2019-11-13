@@ -140,6 +140,7 @@ module.exports = class Templates {
 
   // Save the default list to disk so the user can potentially edit it (WHEN CODEWIND IS NOT RUNNING)
   async writeRepositoryList() {
+    await fs.ensureFile(this.repositoryFile);
     await fs.writeJson(this.repositoryFile, this.repositoryList, { spaces: '  ' });
     log.info(`Repository list updated.`);
   }
@@ -315,8 +316,11 @@ module.exports = class Templates {
       this.providers[name] = provider;
   }
 
-  async addRepositoryToProviders(repo) {
-
+  getProviders() {
+    return this.providers;
+  }
+ 
+  addRepositoryToProviders(repo) {
     const promises = [];
 
     for (const provider of Object.values(this.providers)) {
@@ -335,7 +339,7 @@ module.exports = class Templates {
     return Promise.all(promises);
   }
 
-  async removeRepositoryFromProviders(repo) {
+  removeRepositoryFromProviders(repo) {
 
     const promises = [];
 

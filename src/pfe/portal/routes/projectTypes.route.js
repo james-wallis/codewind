@@ -11,68 +11,10 @@
 const express = require('express');
 
 const Logger = require('../modules/utils/Logger');
+const ProjectTypes = require('../modules/ProjectTypes');
 
 const router = express.Router();
 const log = new Logger(__filename);
-
-function sanitizeProjectType(array, type) {
-
-  // doesn't even have the expected fields, no-op return
-  if (!type.projectType || !type.projectSubtypes || !Array.isArray(type.projectSubtypes.items))
-    return array;
-
-  const sanitized = {
-    projectType: String(type.projectType),
-    projectSubtypes: {
-      label: String(type.projectSubtypes.label),
-      items: []
-    }
-  };
-
-  for (const item of type.projectSubtypes.items) {
-    if (!item.id)
-      continue;
-    sanitized.projectSubtypes.items.push({
-      id: String(item.id),
-      version: String(item.version),
-      label: String(item.label || item.id),
-      description: String(item.description)
-    });
-  }
-
-  if (sanitized.projectSubtypes.items.length > 0)
-    array.push(sanitized);
-
-  return array
-}
-
-async function getProjectTypes(provider, sourceId) {
-  
-  const projectTypes = [];
-
-  // get projectTypes from extension provider
-  if (provider && typeof provider.getProjectTypes == 'function') {
-    // guard against bad providers
-    try {
-      const types = await provider.getProjectTypes(sourceId);
-      if (Array.isArray(types))
-        types.reduce(sanitizeProjectType, projectTypes);
-    }
-    catch (err) {
-      log.error(err.message);
-    }
-  }
-
-  return projectTypes;
-}
-
-function addLanguage(projectType, language) {
-  if (!projectType.projectSubtypes.items.find(item => item.id == language)) {
-    // label is mainly for extension project types to supply custom labels for subtypes
-    // for Codewind the label for the language is just the language itself
-    projectType.projectSubtypes.items.push({ id: language, label: language });
-  }
-}
 
 /**
  * API function to returns a list of supported project types
@@ -80,42 +22,19 @@ function addLanguage(projectType, language) {
  */
 router.get('/api/v1/project-types', async (req, res) => {
   const user = req.cw_user;
-  const projectTypes = [];
-  const seenProjectTypes = {};
+  
   try {
     const templates = await user.templates.getEnabledTemplates();
-    for (const template of templates) {
-      
-      const projectType = template.projectType;
-      const extension = user.extensionList.getExtensionForProjectType(projectType)
-      
-      if (extension) {
-        const sourceId = template.sourceId;
-        const key = `${projectType}/${sourceId}` 
-        // only need to get project types from extension once
-        if (seenProjectTypes[key])
-          continue;
-        const types = await getProjectTypes(user.templates.providers[extension.name], sourceId);
-        projectTypes.push(...types);
-        seenProjectTypes[key] = true;
-      }
-      else {
-        // initialize a new entry
-        if (!seenProjectTypes[projectType]) {
-          const type = {
-            projectType: projectType,
-            projectSubtypes: {
-              items: []
-            }
-          };
-          projectTypes.push(type);
-          seenProjectTypes[projectType] = type;
-        }
-        
-        addLanguage(seenProjectTypes[projectType], template.language);
-      }
-    }
-
+    const providers = await user.templates.getProviders();
+    const extensionList = user.extensionList;
+    const projectTypes = await ProjectTypes.getTypes(templates, providers, extensionList);
+    console.log('templates', templates);
+    console.log('providers', providers);
+    console.log('extensionList', extensionList);
+    console.log('projectTypes', projectTypes);
+    
+    
+    
     res.status(200).send(projectTypes);
   } catch (err) {
     log.error(err);

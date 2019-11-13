@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/codewind-resources/codewind-templates/master/devfiles/index.json",
+    "description": "Codewind project templates help you create containerized projects for various runtimes.",
+    "enabled": true,
+    "protected": true,
+    "projectStyles": [
+      "Codewind"
+    ],
+    "name": "Default templates"
+  },
+  {
+    "url": "https://github.com/kabanero-io/collections/releases/download/v0.1.2/kabanero-index.json",
+    "name": "Kabanero Collections",
+    "description": "Kabanero, an open source project, brings together open source technologies into a microservices-based framework.Kabanero builds cloud native applications ready for deployment onto Kubernetes and Knative.",
+    "enabled": false,
+    "protected": true,
+    "projectStyles": [
+      "Appsody"
+    ]
+  }
+]

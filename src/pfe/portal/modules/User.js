@@ -46,7 +46,7 @@ module.exports = class User {
     // socket.io namespace is user or false (single user, no need for a namespace)
     this.uiSocketNamespace = (this.user_id) ? path.normalize(`/${this.user_id}`) : false;
     // Setup socket to the UI for this user
-    if (this.uiSocketNamespace) {
+    if (uiSocket && this.uiSocketNamespace) {
       this.uiSocket = uiSocket.of(this.uiSocketNamespace);
     } else {
       this.uiSocket = uiSocket;
