@@ -12,8 +12,6 @@ const Logger = require('./utils/Logger');
 const log = new Logger(__filename);
 
 function sanitizeProjectType(array, type) {
-
-  // doesn't even have the expected fields, no-op return
   if (!type.projectType || !type.projectSubtypes || !Array.isArray(type.projectSubtypes.items))
     return array;
   
@@ -26,8 +24,8 @@ function sanitizeProjectType(array, type) {
   };
   
   for (const item of type.projectSubtypes.items) {
-    if (!item.id)
-      continue;
+    if (!item.id) continue;
+
     sanitized.projectSubtypes.items.push({
       id: String(item.id),
       version: String(item.version),
@@ -43,9 +41,7 @@ function sanitizeProjectType(array, type) {
 }
   
 async function getProjectTypes(provider, sourceId) {
-    
   const projectTypes = [];
-  
   // get projectTypes from extension provider
   if (provider && typeof provider.getProjectTypes == 'function') {
     // guard against bad providers
@@ -58,7 +54,6 @@ async function getProjectTypes(provider, sourceId) {
       log.error(err.message);
     }
   }
-  
   return projectTypes;
 }
   

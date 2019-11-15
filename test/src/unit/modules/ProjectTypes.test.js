@@ -27,6 +27,14 @@ chai.use(chaiSubset);
 chai.use(chaiAsPromised);
 chai.should();
 
+// const mockedProvider = {
+//     getProjectTypes: () => {
+//         return {
+
+//         };
+//     },
+// }
+
 describe('ProjectTypes.js', () => {
     suppressLogOutput(ProjectTypes);
     beforeEach(() => {
@@ -38,9 +46,12 @@ describe('ProjectTypes.js', () => {
         fs.ensureDirSync(global.codewind.CODEWIND_TEMP_WORKSPACE);
     });
     after(() => {
-        // fs.remove(global.codewind.CODEWIND_WORKSPACE);
+        fs.remove(global.codewind.CODEWIND_WORKSPACE);
     });
-    describe('getTypes(templates, providers, extensionList', () => {
+    describe('sanitizeProjectType(array, type)', () => {
+
+    });
+    describe.skip('getTypes(templates, providers, extensionList', () => {
         it('test', async() => {
             const templates = new Templates(global.codewind.CODEWIND_WORKSPACE);
             await templates.initializeRepositoryList();
