@@ -224,8 +224,10 @@ router.post('/api/v1/projects/:id/upload/end', async (req, res) => {
 
         log.info(`Removing locally deleted files from project: ${project.name}, ID: ${project.projectID} - ` +
           `${filesToDelete.join(', ')}`);
-        // remove the file from pfe container
-        await deleteFilesAndCleanUpEmptyDirectories(pathToProj, filesToDelete);
+        if (filesToDelete.length > 0) {
+          // remove the file from pfe container
+          await deleteFilesAndCleanUpEmptyDirectories(pathToProj, filesToDelete);
+        }
         res.sendStatus(200);
 
         await syncToBuildContainer(project, filesToDelete, pathToTempProj, modifiedList, timeStamp, IFileChangeEvent, user, projectID);
