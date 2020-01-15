@@ -12,7 +12,10 @@ global.codewind = { RUNNING_IN_K8S: false };
 
 const fs = require('fs-extra');
 const { execSync } = require('child_process');
+const path = require('path');
 const rewire = require('rewire');
+const assert = require('assert');
+const yaml = require('js-yaml');
 const chai = require('chai');
 const chaiSubset = require('chai-subset');
 const chaiAsPromised = require('chai-as-promised');
