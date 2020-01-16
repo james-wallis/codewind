@@ -1,9 +1,19 @@
-const utils = require('./utils/sharedFunctions');
+/*******************************************************************************
+ * Copyright (c) 2020 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 const { promisify } = require('util');
 const exec = promisify(require('child_process').exec);
-const Logger = require('./utils/Logger');
 const fs = require('fs-extra');
 const path = require('path');
+const Logger = require('./Logger');
+const utils = require('./sharedFunctions');
 
 const log = new Logger(__filename);
 const extensionsDir = '/extensions';
