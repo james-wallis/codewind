@@ -1,53 +1,54 @@
-# Codewind
-![platforms](https://img.shields.io/badge/runtime-Java%20%7C%20Swift%20%7C%20Node-yellow.svg)
-[![License](https://img.shields.io/badge/License-EPL%202.0-red.svg?label=license&logo=eclipse)](https://www.eclipse.org/legal/epl-2.0/)
-[![Build Status](https://ci.eclipse.org/codewind/buildStatus/icon?job=Codewind%2Fcodewind%2Fmaster)](https://ci.eclipse.org/codewind/job/Codewind/job/codewind/job/master/)
-[![Chat](https://img.shields.io/static/v1.svg?label=chat&message=mattermost&color=145dbf)](https://mattermost.eclipse.org/eclipse/channels/eclipse-codewind)
+# Codewind: Prototype application communication
 
-Build high-quality cloud-native applications for Kubernetes, regardless of your IDE or language.
+## Design bits
+```
+{
+    "projectID": "bbe6aac0-4381-11ea-84b8-5f9f6507a606",
+    "name": "noddy",
+    "connectedProjects": [
+        {
+            "projectID": "911c90d0-339a-11ea-bbad-9dca553ae31e",
+            "projectName": "javaApp",
+            "env": "process.env.PROJECT_ID",
+            "url": "appbaseURL or host+port (aka what we use to talk to performance)",
+            "connectionID": "K60NGBW9",
+            "connectionURL": "https://codewind-gatekeeper-k56r8d8f.apps.exact-mongrel-icp-mst.9.20.195.90.nip.io",
+        },
+        {
+            ...
+        }
+    ]
+}
+```
 
-Codewind enables you to create applications from a template or sample and includes support for launching, updating, testing, and debugging in  Docker containers on the desktop. Codewind also supports these features on Kubernetes. You can use Codewind to move existing applications to Docker and Kuberenetes. Codewind provides validation to ensure that applications follow best practices.
+## CWCTL parts
+`cwctl project connect` ? 
 
-## Getting started
-Use the following instructions to install Codewind with your choice of editor:
-1. [VS Code extension](https://github.com/eclipse/codewind-vscode)
-2. [Eclipse plugin](https://github.com/eclipse/codewind-eclipse)
-3. [Eclipse Che plugin](https://github.com/eclipse/codewind-che-plugin)
+## Demo
+1. Start Codewind local
+2. Start Codewind remote
+3. Use `cwctl connections add` to make `cwctl` aware of the remote
+    * `cwctl` can now contact both local and remote instances
+4. Create a Node.js application through local (`cwctl project create` + `cwctl project bind`)
+5. Create a Node.js application through remote (`cwctl project create` + `cwctl project bind`)
+6. Tell the local Node.js application that the remote Node.js application exists.
+    * `cwctl project network add`
+7. Local Node.js application will restart and have a new environment variable with the value of the remote Node.js application's url
+8. Do a `cwctl project network get {local Node.js application's ID}` to get the name of the new environment variable
+9. Edit the local Node.js application to use the environment variable to talk to the remote Node.js application
+10. [Optional] do a `cwctl project network edit {local Node.js application's ID}` to change the name of the environment variable
+    * Use this to demonstrate that the name of the environment variable can be the production one = less changes in production
 
-## Feedback and community
-Have any questions or comments on Codewind? Want to get involved? You can get in touch with the team:
-- **Support:** Ask questions, report bugs, and request features with [GitHub issues](https://github.com/eclipse/codewind/issues).
-- **Public chat:** Join the public [eclipse-codewind](https://mattermost.eclipse.org/eclipse/channels/eclipse-codewind) and [eclipse-codewind-dev](https://mattermost.eclipse.org/eclipse/channels/eclipse-codewind-dev) Mattermost channels.
-- **Twitter:** Follow Codewind on Twitter at [@EclipseCodewind](https://twitter.com/EclipseCodewind).
-- **Mailing list:** Join the mailing list from [codewind-dev@eclipse.org](https://accounts.eclipse.org/mailing-list/codewind-dev).
-- **Weekly meetings:** The Codewind team holds [weekly calls](https://github.com/eclipse/codewind/wiki/Codewind-Calls) every Tuesday and Thursday at 9:00 AM Eastern Time / 14:00 UTC.
+### Steps needed to reach the demo
+- [ ] Add an API that can add a new connectedProject to an existing project
+- [ ] Tell fw that it needs to add the environment variable to the Docker container
+- [ ] Add an API that can get the connectProject list
+- [ ] Add a `cwctl project network add` which can call the new API and connect two applications
+- [ ] Add a `cwctl project network get` which can get the connectedProjects for a project (this will get the environment variable name to use in the new application)
 
-## Contributing
-We welcome submitting issues and contributions.
-- :bug: [Submit bugs.](https://github.com/eclipse/codewind/issues)
-- :pencil2: [Contribute.](CONTRIBUTING.md)
-- :mag_right: [View the API documentation.](https://eclipse.github.io/codewind/)
-- :memo: [Improve the docs.](https://github.com/eclipse/codewind-docs)
-- :building_construction: [View the Codewind architecture.](https://github.com/codewind-resources/design-documentation)
-- :octocat: [See the Codewind repositories.](https://github.com/eclipse?utf8=%E2%9C%93&q=codewind&type=&language=)
-- :sparkles: [Check out good first issues for new contributors.](https://github.com/eclipse/codewind/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-
-## Building Codewind from the source
-1. Clone the `codewind` repository.
-2. Run the `./script/build.sh` script to run the Codewind build, or run the `./run.sh` script to build and start Codewind.
-
-After you build Codewind with the build scripts, you can build one of the IDEs for Codewind:
-- For Eclipse, see "Building" in the [`codewind-eclipse` repository](https://github.com/eclipse/codewind-eclipse/blob/master/README.md).
-- For VS Code, see "Building Codewind from the source" in the [`codewind-vscode` repository](https://github.com/eclipse/codewind-vscode/blob/master/README.md).
-
-## Developing - Attaching a Node.js debugger in VSCode
-Codewind contains two debugging tools for VSCode in the `.vscode/launch.json` file.
-To use these you should:
-1. Clone the `codewind` repository.
-2. Copy the `src/pfe/devbuild-example.env` file to `src/pfe/devbuild.env` to turn on the Node.js inspect (See `src/pfe/package.json`).
-3. Run the `./run.sh` script to build and start Codewind.
-4. Open the Codewind directory in VSCode (Something like `code github/codewind`).
-5. Open the debugging tab and select one of the debugging options.
+#### Optional extras
+- [ ] Add an API which can edit a connectedProject for a project so we can update the environment variable name
+- [ ] Add a `cwctl project network edit` which can edit the connections (and the environment variable for the demo application)
 
 ## License
 [EPL 2.0](https://www.eclipse.org/legal/epl-2.0/)
