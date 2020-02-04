@@ -1692,7 +1692,98 @@ paths:
                     example: "/Dockerfile-tools"
        500:
           description: Internal Server Error
-
+  /api/v1/projects/{id}/network:
+    post:
+      summary: Connect a project to another project
+      description: >
+        Pass a projects url to a project so its able to talk to it
+      parameters:
+        - name: id
+          in: path
+          schema:
+            $ref: '#/components/schemas/ProjectID'
+          required: true
+          description: id of project
+      requestBody:
+        description: JSON object containing details of the project to connect this project to
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - projectID
+                - projectName
+                - projectURL
+                - connectionID
+                - connectionURL
+              properties:
+                projectID:
+                  schema:
+                    $ref: '#/components/schemas/ProjectID'
+                projectName:
+                  schema:
+                    $ref: '#/components/schemas/ProjectName'
+                projectURL:
+                  type: string
+                connectionID:
+                  type: string
+                connectionURL:
+                  type: string
+      responses:
+        200:
+          description: Connection added
+          content:
+            text/html:
+              schema:
+                type: string
+        404:
+          description: Project not found
+          content:
+            text/html:
+              schema:
+                type: string
+        500:
+          description: Internal Error
+    get:
+      summary: Get all the connected projects for a project
+      description: >
+        An object containing connected projects
+      parameters:
+        - in: path
+          name: id
+          schema:
+            $ref: '#/components/schemas/ProjectID'
+          required: true
+          description: id of project
+      responses:
+        200:
+          description: Object containing connected projects
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: if the project with id was not found
+    delete:
+      summary: Delete a projects network object
+      description: >
+        Used to quickly reset the network object in prototyping
+      parameters:
+        - in: path
+          name: id
+          schema:
+            $ref: '#/components/schemas/ProjectID'
+          required: true
+          description: id of project
+      responses:
+        200:
+          description: Object containing connected projects
+          content:
+            application/json:
+              schema:
+                type: object
+        404:
+          description: if the project with id was not found
 components:
   schemas:
     Project:

@@ -270,7 +270,13 @@ function dockerRun() {
 	workspace=`$util getWorkspacePathForVolumeMounting $LOCAL_WORKSPACE`
 	echo "Workspace path used for volume mounting is: "$workspace""
 
-	$IMAGE_COMMAND run --network=codewind_network -e $heapdump --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt $project /bin/bash -c "$dockerCmd";
+	ENV_FILE="$WORKSPACE/$projectName/codewind_environment_variables.list"
+	ENV_FILE_CMD=""
+	if [ -f "$ENV_FILE" ]; then
+		ENV_FILE_CMD=" --env-file $ENV_FILE "
+	fi
+
+	$IMAGE_COMMAND run --network=codewind_network -e $heapdump $ENV_FILE_CMD --name $project -p 127.0.0.1::$DEBUG_PORT -P -dt $project /bin/bash -c "$dockerCmd";
 	if [ $? -eq 0 ]; then
 		echo -e "Copying over source files"
 		docker cp "$WORKSPACE/$projectName/." $project:/app

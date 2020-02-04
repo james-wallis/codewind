@@ -120,6 +120,12 @@ module.exports = class Project {
       this.injectMetrics = args.injectMetrics;
     }
     this.capabilitiesReady = false;
+
+    // Setup the network object
+    this.network = {
+      connectionEnvFile: join(this.workspace, this.directory, 'codewind_environment_variables.list'),
+      connectedProjects: {},
+    }
   }
 
 
@@ -708,6 +714,61 @@ module.exports = class Project {
    */
   resolveMonitorPath(path) {
     return isAbsolute(path) ? cwUtils.convertFromWindowsDriveLetter(path) : join(this.pathToMonitor, path);
+  }
+
+  getConnectedProjects() {
+    return this.network.connectedProjects;
+  }
+
+  async addConnectedProject(projectID, projectName, projectURL, connectionID, connectionURL) {
+    if (!projectID || !projectName || !projectURL || !connectionID || !connectionURL) {
+      throw new Error('Invalid parameters given');
+    }
+    const connectedProjectID = `${projectID}/${connectionID}`;
+    const envName = `CODEWIND_${projectName}_${projectID.substring(0, 4)}_URL`.toUpperCase();
+    if (this.network.connectedProjects.hasOwnProperty(connectedProjectID)) {
+      throw new Error('Project is already connected');
+    }
+    const connectedProjects = { ...this.network.connectedProjects};
+    const newConnectedProject = {
+      projectID,
+      projectName,
+      projectURL,
+      connectionID,
+      connectionURL,
+      env: envName,
+    };
+    connectedProjects[connectedProjectID] = newConnectedProject;
+    await this.writeNetworkEnvFile(this.network.connectionEnvFile, connectedProjects);
+    this.network.connectedProjects = connectedProjects;
+  }
+
+  async editConnectedProjectEnvName(projectID, connectionID, newEnvName) {
+    const connectedProjectID = `${projectID}/${connectionID}`;
+    if (!this.network.connectedProjects.hasOwnProperty(connectedProjectID)) {
+      throw new Error(`Project ${this.projectID} is not connected to ${projectID} on connection ${connectionID}`);
+    }
+    const connectedProjects = { ...this.network.connectedProjects};
+    connectedProjects[connectedProjectID].env = newEnvName;
+    await this.writeNetworkEnvFile(this.network.connectionEnvFile, connectedProjects);
+    this.network.connectedProjects = connectedProjects;
+  }
+
+  async resetNetwork() {
+    await fs.remove(this.network.connectionEnvFile);
+    this.network.connectedProjects = {};
+  }
+
+  async writeNetworkEnvFile(envFileLocation, connectedProjects) {
+    let envStrings = '';
+    for (const key in connectedProjects) {
+      if (connectedProjects.hasOwnProperty(key)) {
+        const { env, projectURL } = connectedProjects[key];
+        envStrings += `${env}=${projectURL}\n`;
+      }
+    }
+    log.info(`Writing connection env to ${this.network.connectionEnvFile}`);
+    await fs.writeFile(envFileLocation, envStrings);
   }
 }
 
