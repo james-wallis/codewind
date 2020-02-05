@@ -725,7 +725,8 @@ module.exports = class Project {
       throw new Error('Invalid parameters given');
     }
     const connectedProjectID = `${projectID}/${connectionID}`;
-    const envName = `CODEWIND_${projectName}_${projectID.substring(0, 4)}_URL`.toUpperCase();
+    const nameWithUnderscores = projectName.replace(/\W+/g, "_");
+    const envName = `CODEWIND_${nameWithUnderscores}_${projectID.substring(0, 4)}_URL`.toUpperCase();
     if (this.network.connectedProjects.hasOwnProperty(connectedProjectID)) {
       throw new Error('Project is already connected');
     }
