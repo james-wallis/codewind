@@ -24,8 +24,8 @@ router.get('/api/v1/projects/:id', (req, res) => {
     let user = req.cw_user;
     let project = user.projectList.retrieveProject(projectID);
     // If neither appBaseURL or host:exposed port exist it will default to ""
-    const appBaseURL = (project.appBaseURL) ? project.appBaseURL : "";
-    const prototypeURL = (project.host && project.ports && project.ports.exposedPort) ? `${project.host}:${project.ports.exposedPort}` : appBaseURL;
+    const localURL = (project.ports && project.host && project.ports.exposedPort) ? `${project.host}:${project.ports.exposedPort}` : "";
+    const prototypeURL = (project.appBaseURL) ? project.appBaseURL : localURL;
     project.prototypeURL = prototypeURL;
     if (project) {
       res.status(200).send(project);
