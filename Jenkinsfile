@@ -124,7 +124,7 @@ pipeline {
                     sh '''#!/usr/bin/env bash
                         env 
 
-                        
+
                         # Docker system prune
                         echo "Docker system prune ..."
                         docker system df
@@ -174,10 +174,10 @@ pipeline {
                         cp -r $DIR/docs ${SRC_DIR}/pfe/portal/
 
                         echo -e "\n+++   DOWNLOADING EXTENSIONS   +++\n";
-                        if [ $GIT_BRANCH == "master" ]; then
+                        if [ $CHANGE_TARGET == "master" ]; then
                             VERSION="9.9.9999"
                         else
-                            VERSION="$GIT_BRANCH"
+                            VERSION="$CHANGE_TARGET"
                         fi
                         
                         echo "extension to be downloaded: $VERSION"
