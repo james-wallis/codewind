@@ -1,6 +1,4 @@
 #!groovy
-
-echo TOBES
 pipeline {
     agent {
         label "docker-build"
