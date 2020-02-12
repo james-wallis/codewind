@@ -84,9 +84,8 @@ router.get('/api/v1/project-types', async (req, res) => {
   const seenProjectTypes = {};
   try {
     const templates = await user.templates.getTemplates(true);
-    const promises = templates.map(async template => {
-      // for (const template of templates) {
-  
+    for (const template of templates) {
+
       const projectType = template.projectType;
       const extension = user.extensionList.getExtensionForProjectType(projectType)
 
@@ -94,12 +93,13 @@ router.get('/api/v1/project-types', async (req, res) => {
         const sourceId = template.sourceId;
         const key = `${projectType}/${sourceId}`
         // only need to get project types from extension once
-        if (!seenProjectTypes[key]) {
-          const types = await getProjectTypes(user.templates.providers[extension.name], sourceId);
-          projectTypes.push(...types);
-          seenProjectTypes[key] = true;
-        }
-      } else {
+        if (seenProjectTypes[key])
+          continue;
+        const types = await getProjectTypes(user.templates.providers[extension.name], sourceId);
+        projectTypes.push(...types);
+        seenProjectTypes[key] = true;
+      }
+      else {
         // initialize a new entry
         if (!seenProjectTypes[projectType]) {
           const type = {
@@ -114,8 +114,8 @@ router.get('/api/v1/project-types', async (req, res) => {
 
         addLanguage(seenProjectTypes[projectType], template.language);
       }
-    });
-    await Promise.all(promises);
+    }
+
     res.status(200).send(projectTypes);
   } catch (err) {
     log.error(err);
