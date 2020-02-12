@@ -174,18 +174,44 @@ pipeline {
                         cp -r $DIR/docs ${SRC_DIR}/pfe/portal/
 
                         echo -e "\n+++   DOWNLOADING EXTENSIONS   +++\n";
-                        if [ $CHANGE_TARGET == "master" ]; then
-                            VERSION="9.9.9999"
+
+                        # If CHANGE_TARGET is set then this is a PR so use the target branch (usually master)
+                        VERSION=""
+                        BRANCH=""
+                        if [ -z "$CHANGE_TARGET" ]; then
+                            BRANCH=$CHANGE_TARGET
+                            if [ $CHANGE_TARGET == "master" ]; then
+                                VERSION="9.9.9999"
+                            else
+                                VERSION="$CHANGE_TARGET"
+                            fi
                         else
-                            VERSION="$CHANGE_TARGET"
+                            BRANCH=$GIT_BRANCH
+                            if [ $GIT_BRANCH == "master" ]; then
+                                VERSION="9.9.9999"
+                            else
+                                VERSION="$GIT_BRANCH"
+                            fi
                         fi
+
+                        echo "extension version to be downloaded: $VERSION"
+                        echo "extension branch to be used: $BRANCH"
                         
-                        echo "extension to be downloaded: $VERSION"
                         mkdir -p ${SRC_DIR}/pfe/extensions
                         rm -f ${SRC_DIR}/pfe/extensions/codewind-appsody-extension-*.zip
                         rm -f ${SRC_DIR}/pfe/extensions/codewind-odo-extension-*.zip
-                        curl -Lfo ${SRC_DIR}/pfe/extensions/codewind-appsody-extension-$VERSION.zip http://download.eclipse.org/codewind/codewind-appsody-extension/$CHANGE_TARGET/latest/codewind-appsody-extension-$VERSION.zip
+
+                        curl -Lfo ${SRC_DIR}/pfe/extensions/codewind-appsody-extension-$VERSION.zip http://download.eclipse.org/codewind/codewind-appsody-extension/$BRANCH/latest/codewind-appsody-extension-$VERSION.zip
+                        if [ $? -ne 0 ]; then
+                            echo "Error downloading appsody extension"
+                            exit 1
+                        fi
+
                         curl -Lfo ${SRC_DIR}/pfe/extensions/codewind-odo-extension-$VERSION.zip http://download.eclipse.org/codewind/codewind-odo-extension/$CHANGE_TARGET/latest/codewind-odo-extension-$VERSION.zip
+                        if [ $? -ne 0 ]; then
+                            echo "Error downloading odo extension"
+                            exit 1
+                        fi
 
                         # BUILD IMAGES
                         # Uses a build file in each of the directories that we want to use
