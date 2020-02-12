@@ -179,24 +179,24 @@ pipeline {
                         VERSION=""
                         BRANCH=""
                         if [ -z "$CHANGE_TARGET" ]; then
+                             BRANCH=$GIT_BRANCH
+                            if [ $GIT_BRANCH == "master" ]; then
+                                VERSION="9.9.9999"
+                            else
+                                VERSION="$GIT_BRANCH"
+                            fi
+                        else
                             BRANCH=$CHANGE_TARGET
                             if [ $CHANGE_TARGET == "master" ]; then
                                 VERSION="9.9.9999"
                             else
                                 VERSION="$CHANGE_TARGET"
                             fi
-                        else
-                            BRANCH=$GIT_BRANCH
-                            if [ $GIT_BRANCH == "master" ]; then
-                                VERSION="9.9.9999"
-                            else
-                                VERSION="$GIT_BRANCH"
-                            fi
                         fi
 
                         echo "extension version to be downloaded: $VERSION"
                         echo "extension branch to be used: $BRANCH"
-                        
+
                         mkdir -p ${SRC_DIR}/pfe/extensions
                         rm -f ${SRC_DIR}/pfe/extensions/codewind-appsody-extension-*.zip
                         rm -f ${SRC_DIR}/pfe/extensions/codewind-odo-extension-*.zip
