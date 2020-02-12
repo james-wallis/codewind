@@ -15,106 +15,106 @@ pipeline {
     }
 
     stages {
-        // stage('Run Portal eslint and unit tests') {
-        //     options {
-        //         timeout(time: 30, unit: 'MINUTES') 
-        //     }
-        //     steps {
-        //         withEnv(["PATH=$PATH:~/.local/bin;NOBUILD=true"]) {
-        //             sh '''#!/usr/bin/env bash
-        //                 DIR=`pwd`;
+        stage('Run Portal eslint and unit tests') {
+            options {
+                timeout(time: 30, unit: 'MINUTES') 
+            }
+            steps {
+                withEnv(["PATH=$PATH:~/.local/bin;NOBUILD=true"]) {
+                    sh '''#!/usr/bin/env bash
+                        DIR=`pwd`;
 
-        //                 echo "Starting unit tests for Portal..."
-        //                 export PATH=$PATH:/home/jenkins/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node_js/bin/
+                        echo "Starting unit tests for Portal..."
+                        export PATH=$PATH:/home/jenkins/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node_js/bin/
 
-        //                 # Install nvm to easily set version of node to use
-        //                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-        //                 export NVM_DIR="$HOME/.nvm" 
-        //                 . $NVM_DIR/nvm.sh
-        //                 nvm i 10
+                        # Install nvm to easily set version of node to use
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+                        export NVM_DIR="$HOME/.nvm" 
+                        . $NVM_DIR/nvm.sh
+                        nvm i 10
                         
-        //                 # Run eslint on portal code
-        //                 cd $DIR/src/pfe/portal
-        //                 npm install
-        //                 if [ $? -ne 0 ]; then
-        //                     exit 1
-        //                 fi
+                        # Run eslint on portal code
+                        cd $DIR/src/pfe/portal
+                        npm install
+                        if [ $? -ne 0 ]; then
+                            exit 1
+                        fi
 
-        //                 npm run eslint
-        //                 if [ $? -ne 0 ]; then
-        //                     exit 1
-        //                 fi
+                        npm run eslint
+                        if [ $? -ne 0 ]; then
+                            exit 1
+                        fi
 
-        //                 # Run eslint on portal tests
-        //                 cd $DIR/test
-        //                 npm install
-        //                 if [ $? -ne 0 ]; then
-        //                     exit 1
-        //                 fi
+                        # Run eslint on portal tests
+                        cd $DIR/test
+                        npm install
+                        if [ $? -ne 0 ]; then
+                            exit 1
+                        fi
 
-        //                 npm run eslint
-        //                 if [ $? -ne 0 ]; then
-        //                     exit 1
-        //                 fi
+                        npm run eslint
+                        if [ $? -ne 0 ]; then
+                            exit 1
+                        fi
                             
-        //                 # Run the unit test suite
-        //                 echo "Portal unit tests"
+                        # Run the unit test suite
+                        echo "Portal unit tests"
 
-        //                 npm run unittest
-        //                 if [ $? -eq 0 ]; then
-        //                     echo "+++   PORTAL UNIT TESTS COMPLETED SUCCESSFULLY   +++";
-        //                 else
-        //                     echo "+++   PORTAL UNIT TESTS FAILED   +++";
-        //                     exit 1;
-        //                 fi
-        //                 '''
-        //         }
-        //     }
-        // }
+                        npm run unittest
+                        if [ $? -eq 0 ]; then
+                            echo "+++   PORTAL UNIT TESTS COMPLETED SUCCESSFULLY   +++";
+                        else
+                            echo "+++   PORTAL UNIT TESTS FAILED   +++";
+                            exit 1;
+                        fi
+                        '''
+                }
+            }
+        }
 
-        // stage('Run Turbine unit test suite') {
-        //     options {
-        //         timeout(time: 30, unit: 'MINUTES')
-        //     }
-        //     steps {
-        //         withEnv(["PATH=$PATH:~/.local/bin;NOBUILD=true"]) {
-        //             withDockerRegistry([url: 'https://index.docker.io/v1/', credentialsId: 'docker.com-bot']) {
-        //                 sh '''#!/usr/bin/env bash
-        //                 DIR=`pwd`;
-        //                 echo "Starting unit tests for Turbine..."
-        //                 export PATH=$PATH:/home/jenkins/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node_js/bin/
+        stage('Run Turbine unit test suite') {
+            options {
+                timeout(time: 30, unit: 'MINUTES')
+            }
+            steps {
+                withEnv(["PATH=$PATH:~/.local/bin;NOBUILD=true"]) {
+                    withDockerRegistry([url: 'https://index.docker.io/v1/', credentialsId: 'docker.com-bot']) {
+                        sh '''#!/usr/bin/env bash
+                        DIR=`pwd`;
+                        echo "Starting unit tests for Turbine..."
+                        export PATH=$PATH:/home/jenkins/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node_js/bin/
                         
-        //                 ARCH=`uname -m`;
-        //                 printf "\n\n${MAGENTA}Platform: $ARCH ${RESET}\n"
+                        ARCH=`uname -m`;
+                        printf "\n\n${MAGENTA}Platform: $ARCH ${RESET}\n"
 
-        //                 # Install nvm to easily set version of node to use
-        //                 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-        //                 export NVM_DIR="$HOME/.nvm" 
-        //                 . $NVM_DIR/nvm.sh
-        //                 nvm i 10
+                        # Install nvm to easily set version of node to use
+                        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+                        export NVM_DIR="$HOME/.nvm" 
+                        . $NVM_DIR/nvm.sh
+                        nvm i 10
                         
-        //                 # Run eslint on turbine code
-        //                 cd $DIR/src/pfe/file-watcher/server
-        //                 npm install
+                        # Run eslint on turbine code
+                        cd $DIR/src/pfe/file-watcher/server
+                        npm install
                         
-        //                 if [ $? -ne 0 ]; then
-        //                     exit 1
-        //                 fi
+                        if [ $? -ne 0 ]; then
+                            exit 1
+                        fi
                             
-        //                 # Run the unit test suite
-        //                 echo "Started running Turbine Unit Test Suite"
-        //                 npm run unit:test
-        //                 if [ $? -eq 0 ]; then
-        //                     echo "+++   TURBINE UNIT TESTS COMPLETED SUCCESSFULLY   +++";
-        //                 else
-        //                     echo "+++   TURBINE UNIT TESTS FAILED   +++";
-        //                     exit 1;
-        //                 fi
-        //                 '''
-        //             }
-        //         }
-        //     }
-        // }
+                        # Run the unit test suite
+                        echo "Started running Turbine Unit Test Suite"
+                        npm run unit:test
+                        if [ $? -eq 0 ]; then
+                            echo "+++   TURBINE UNIT TESTS COMPLETED SUCCESSFULLY   +++";
+                        else
+                            echo "+++   TURBINE UNIT TESTS FAILED   +++";
+                            exit 1;
+                        fi
+                        '''
+                    }
+                }
+            }
+        }
 
         stage('Build Docker images') {
             steps {
@@ -122,9 +122,6 @@ pipeline {
                     
                     // NOTE: change of this sh call should be in sync with './script/build.sh'. 
                     sh '''#!/usr/bin/env bash
-                        env 
-
-
                         # Docker system prune
                         echo "Docker system prune ..."
                         docker system df

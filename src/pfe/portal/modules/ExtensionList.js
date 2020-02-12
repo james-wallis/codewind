@@ -77,7 +77,6 @@ module.exports = class ExtensionList {
     const entries = await fs.readdir(extensionsPath);
     log.trace(`Extension Path: ${extensionsPath}, directory contents: ${entries}`);
     const returnedObjects = await Promise.all(entries.map(entry => this.loadExtensionFromDisk(extensionsPath, entry)));
-    log.trace(`Extension Path: ${extensionsPath}, all returned extensions: ${returnedObjects.map(obj => (obj && obj.name) ? obj.name : obj).join(",\n\t")}`);
     const extensions = returnedObjects.filter(Boolean);
     log.trace(`Extension Path: ${extensionsPath}, filtered returned extensions: ${extensions.map(ext=>ext.name).join(",\n\t")}`);
     return extensions;
@@ -184,7 +183,6 @@ module.exports = class ExtensionList {
  * @return Promise
  */
 function addExtensionsToTemplates(extensions, templates) {
-  log.trace(`addExtensionsToTemplates -> extensions: ${extensions.map(entry=>entry.name).join(",\n\t")}`);
   return Promise.all(extensions.map(async extension => {
     try {
       if (extension.templates) {

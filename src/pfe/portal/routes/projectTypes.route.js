@@ -83,10 +83,7 @@ router.get('/api/v1/project-types', async (req, res) => {
   const projectTypes = [];
   const seenProjectTypes = {};
   try {
-    console.log('refresh', user.templates.projectTemplatesNeedsRefresh);
     const templates = await user.templates.getTemplates(true);
-    const projectTypesList = user.extensionList.getProjectTypes();
-    console.log(projectTypesList);
     const promises = templates.map(async template => {
       // for (const template of templates) {
   
@@ -118,38 +115,7 @@ router.get('/api/v1/project-types', async (req, res) => {
         addLanguage(seenProjectTypes[projectType], template.language);
       }
     });
-
-    // const promises = templates.map(async template => {
-    //   const projectType = template.projectType;
-    //   console.log('projectType', projectType);
-    //   const extension = user.extensionList.getExtensionForProjectType(projectType)
-    //   if (extension) {
-    //     const sourceId = template.sourceId;
-    //     // const key = `${projectType}/${sourceId}`
-    //     // only need to get project types from extension once
-    //     // if (seenProjectTypes[key])
-    //     //   return;
-    //     const types = await getProjectTypes(user.templates.providers[extension.name], sourceId);
-    //     // console.log('extension');
-    //     // console.log(types);
-    //     return types;
-    //   }
-    //   const type = {
-    //     projectType: projectType,
-    //     projectSubtypes: {
-    //       items: []
-    //     }
-    //   };
-    //   // console.log('not an extension');
-    //   // console.log(type);
-    //   return type;
-    //   // addLanguage(seenProjectTypes[projectType], template.language);
-    // });
-    // console.log(promises);
     await Promise.all(promises);
-    console.log(projectTypes);
-    // const nedd = [].concat(projectTypes);
-    // console.log(nedd);
     res.status(200).send(projectTypes);
   } catch (err) {
     log.error(err);
