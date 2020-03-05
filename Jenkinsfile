@@ -14,6 +14,10 @@ pipeline {
         skipStagesAfterUnstable()
     }
 
+    environment {
+        CODECOV_TOKEN = credentials('codecov-token-codewind-repository')
+    }
+
     stages {
         stage('Run Portal eslint and unit tests') {
             options {
