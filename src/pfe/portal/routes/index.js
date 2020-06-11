@@ -22,6 +22,7 @@ const router = express.Router();
   require('./logging.route'),
   require('./projectTypes.route'),
   require('./extensions.route'),
+  require('./topology.route'),
 ]
   .forEach((subRouter) => router.use(subRouter));
 
